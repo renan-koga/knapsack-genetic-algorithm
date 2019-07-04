@@ -8,7 +8,7 @@ generation = []
 inventory = []
 knapsack_length = 0
 knapsack_volume = 0
-
+best_importance = 0
 
 def gen_population(n=50):
     global population
@@ -17,8 +17,26 @@ def gen_population(n=50):
         #rint(population[i])
 
 def gen_next_generation():
-    for i in range(0, len(population), 2):
+    global generation
+    global population
+    global best_importance
+    generation = []
+    has_childs = False
+    #for i in range(0, len(population), 2):
+    for i in range(len(population) - 1):
         p1 = population[i]
+        p2 = population[i+1]
+        f1, f2 = crossover(p1, p2)
+        if(f1[2] >= best_importance):
+            has_childs = True
+            generation.append(f1)
+        if(f2[2] >= best_importance):
+            has_childs = True
+            generation.append(f2)
+    population = generation
+    best_importance = get_best_importance()
+
+    return has_childs
 
 def gen_individual():
     individual = fill_zeros(knapsack_length)
@@ -39,27 +57,24 @@ def gen_individual():
 
 # def mutate(population):
 
+def get_best_importance():
+    global population
+    best = 0
+    for solution in population:
+        if solution[2] > best:
+            best = solution[2]
+    
+    return best
+
 def crossover(bag1, bag2):
     bag1_items = bag1[0]
     bag2_items = bag2[0]
 
-    ceil = math.ceil(len(bag1_items)/2)
-
-    #print(bag1_items[:ceil])
-    #print(bag2_items[ceil:])
-
+    ceil = math.ceil(knapsack_volume/2)
     s1 = bag1_items[:ceil] + bag2_items[ceil:]
     s2 = bag2_items[:ceil] + bag1_items[ceil:]
 
-    print("CASAMENTO")
-    print(bag1)
-    print(bag2)
-    print(bag_info(s1))
-    print(bag_info(s2))
-    print()
-
-    
-
+    return bag_info(s1), bag_info(s2)
 
 def fitness(arr):
     pass
@@ -102,8 +117,11 @@ def fill_zeros(n):
 
 read_csv('tests/item_50.csv')
 #print(knapsack_volume)
-gen_population(10)
-
-
+#gen_population(10)
+gen_population(math.ceil(knapsack_volume/3))
+n_gen = 0
+while(gen_next_generation()):
+    print("GERAÇÃO: ", n_gen)
+    n_gen = n_gen + 1
 
 # print(knapsack_length)
