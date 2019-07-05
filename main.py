@@ -8,7 +8,6 @@ generation = []
 inventory = []
 knapsack_length = 0
 knapsack_volume = 0
-size = 500
 n_gen = 0
 max_generation = 1000
 
@@ -154,15 +153,16 @@ def print_population():
     for solution in population:
         print(solution)
 
-read_csv('tests/item_50.csv')
-
+read_csv('tests/item_200.csv')
+print(">> ", knapsack_length)
+#size = knapsack_length * math.ceil(knapsack_length/10)
+size = knapsack_length * 3
 gen_population(size)
-
 while(n_gen < max_generation):
     gen_next_generation()
     n_gen += 1
 
-print_population()
+#print_population()
 
 print("##############################################################################################################")
 print("################################################### MELHOR ###################################################")
