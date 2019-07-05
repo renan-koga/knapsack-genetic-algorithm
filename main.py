@@ -1,7 +1,10 @@
+import sys
 import csv
 import math
 from random import seed
 from random import randint
+
+FILE = sys.argv[1]
 
 population = []
 generation = []
@@ -10,7 +13,7 @@ knapsack_length = 0
 knapsack_volume = 0
 size = 500
 n_gen = 0
-max_generation = 1000
+max_generation = 100
 
 def gen_population(n=50):
     global population
@@ -125,10 +128,10 @@ def bag_info(bag_items):
 
     return (bag_items, limit, importance)
 
-def read_csv(name):
+def read_csv():
     global knapsack_length
     global knapsack_volume
-    with open(name) as csv_file:
+    with open(FILE) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for rows in csv_reader:
@@ -154,7 +157,18 @@ def print_population():
     for solution in population:
         print(solution)
 
-read_csv('tests/item_50.csv')
+def write_solution():
+    aux = str(FILE)
+    dirname = aux[:len(aux)-4]
+    filename = dirname + '-solution.csv'
+    print("O arquivo foi escrito no diretório:", dirname)
+
+    with open(filename, "w") as csv_file:
+        writer = csv.writer(csv_file, delimiter=',')
+        for item in population[0][0]:
+            writer.writerow([item])
+
+read_csv()
 
 gen_population(size)
 
@@ -168,3 +182,4 @@ print("#########################################################################
 print("################################################### MELHOR ###################################################")
 print("##############################################################################################################")
 print(population[0])
+write_solution()
