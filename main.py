@@ -1,6 +1,7 @@
 import sys
 import csv
 import math
+import time
 from random import seed
 from random import randint
 
@@ -11,9 +12,8 @@ generation = []
 inventory = []
 knapsack_length = 0
 knapsack_volume = 0
-size = 500
 n_gen = 0
-max_generation = 100
+max_generation = 1000
 
 def gen_population(n=50):
     global population
@@ -159,27 +159,55 @@ def print_population():
 
 def write_solution():
     aux = str(FILE)
-    dirname = aux[:len(aux)-4]
-    filename = dirname + '-solution.csv'
-    print("O arquivo foi escrito no diretório:", dirname)
+    filename = aux[:len(aux)-4] + '-solution.csv'
 
     with open(filename, "w") as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         for item in population[0][0]:
             writer.writerow([item])
 
-read_csv()
+    return filename
 
+def finishing():
+    print("\n\n##############################################################################################################")
+    print("################################################### MELHOR ###################################################")
+    print("##############################################################################################################\n\n")
+    
+    print("Items:", population[0][0])
+    print("Volume:", population[0][1])
+    print("Importance:", population[0][2])
+    filename = write_solution()
+
+    print("\n\n##############################################################################################################")
+    print("##############################################################################################################")
+    print("##############################################################################################################\n\n")
+
+    print("\nSaved file:", filename)
+
+
+##
+# Main starts here
+##
+
+start = time.time()
+
+read_csv()
+size = knapsack_length * 3
 gen_population(size)
 
-while(n_gen < max_generation):
-    gen_next_generation()
-    n_gen += 1
+end = time.time()
 
-print_population()
+try:
+    # while(n_gen < max_generation):
+    while(end-start < 5 * 60):
+        gen_next_generation()
+        n_gen += 1
+        end = time.time()
+except (KeyboardInterrupt):
+    finishing()
+    print("\nTIME:", end-start)
+    sys.exit(0)
 
-print("##############################################################################################################")
-print("################################################### MELHOR ###################################################")
-print("##############################################################################################################")
-print(population[0])
-write_solution()
+finishing()
+
+print("\nTIME:", end-start)
